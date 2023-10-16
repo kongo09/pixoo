@@ -6,10 +6,8 @@ import requests
 from PIL import Image, ImageOps
 
 from ._colors import Palette
-from ._font import retrieve_glyph
-from ._font2 import retrieve_glyph2
+from ._font import retrieve_glyph, FONT_GICKO, FONT_PICO_8
 from .simulator import Simulator, SimulatorConfig
-
 
 def clamp(value, minimum=0, maximum=255):
     if value > maximum:
@@ -53,7 +51,7 @@ class Channel(IntEnum):
 
 class ImageResampleMode(IntEnum):
     PIXEL_ART = Image.NEAREST
-    #SMOOTH = Image.ANTIALIAS
+    SMOOTH = Image.ANTIALIAS
 
 
 class TextScrollDirection(IntEnum):
@@ -106,15 +104,6 @@ class Pixoo:
     def clear_rgb(self, r, g, b):
         self.fill_rgb(r, g, b)
 
-    def draw_character(self, character, xy=(0, 0), rgb=Palette.WHITE):
-        matrix = retrieve_glyph(character)
-        if matrix is not None:
-            teiler = matrix[-1]
-            for index, bit in enumerate(matrix):
-                if bit == 1:
-                    local_x = index % teiler
-                    local_y = int(index / teiler)
-                    self.draw_pixel((xy[0] + local_x, xy[1] + local_y), rgb)
 
     def draw_character_at_location_rgb(self, character, x=0, y=0, r=255, g=255,
                                        b=255):
@@ -243,12 +232,10 @@ class Pixoo:
     def draw_pixel_at_location_rgb(self, x, y, r, g, b):
         self.draw_pixel((x, y), (r, g, b))
 
-    def draw_text(self, text, xy=(0, 0), rgb=Palette.WHITE):
-        for index, character in enumerate(text):
-            self.draw_character(character, (index * 4 + xy[0], xy[1]), rgb)
-
-    def draw_character2(self, character, xy=(0, 0), rgb=Palette.WHITE):
-        matrix = retrieve_glyph2(character)
+    def draw_character(self, character, xy=(0, 0), rgb=Palette.WHITE, font=None):
+        if font is None:
+            font = FONT_PICO_8
+        matrix = retrieve_glyph(character, font)
         if matrix is not None:
             teiler = matrix[-1]
             for index, bit in enumerate(matrix):
@@ -257,13 +244,13 @@ class Pixoo:
                     local_y = int(index / teiler)
                     self.draw_pixel((xy[0] + local_x, xy[1] + local_y), rgb)
 
-    def draw_text2(self, text, xy=(0, 0), rgb=Palette.WHITE):
+    def draw_text(self, text, xy=(0, 0), rgb=Palette.WHITE, font=None):
+        if font is None:
+            font = FONT_PICO_8
+        matrix = 0
         for index, character in enumerate(text):
-            if index == 0:
-                matrix = 0
-            self.draw_character2(character, (matrix + xy[0], xy[1]), rgb)
-            matrix += retrieve_glyph2(character)[-1] + 1
-
+            self.draw_character(character, (matrix + xy[0], xy[1]), rgb, font)
+            matrix += retrieve_glyph(character, font)[-1] + 1
 
     def draw_text_at_location_rgb(self, text, x, y, r, g, b):
         self.draw_text(text, (x, y), (r, g, b))
@@ -335,7 +322,7 @@ class Pixoo:
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
-        
+
     def set_clock(self, clock_id):
         # This won't be possible
         if self.simulated:
@@ -450,7 +437,6 @@ class Pixoo:
             'PicSpeed': 1000,
             'PicData': str(base64.b64encode(bytearray(self.__buffer)).decode())
         }))
-        #print(str(base64.b64encode(bytearray(self.__buffer)).decode()))
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
