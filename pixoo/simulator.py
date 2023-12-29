@@ -65,8 +65,8 @@ class Simulator:
         self.__root.update()
 
     def __prepare_image(self, image):
-        image = image.resize(self.__image_size, Image.NEAREST)
+        image = image.resize(self.__image_size, Image.Resampling.NEAREST)
         return ImageTk.PhotoImage(image)
 
 
-__all__ = (Simulator, SimulatorConfig)
+__all__ = ["Simulator", "SimulatorConfig"]
