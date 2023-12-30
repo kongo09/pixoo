@@ -7,4 +7,4 @@ class Palette:
     WHITE = COLOR_WHITE
 
 
-__all__ = ["Palette", "COLOR_BLACK", "COLOR_WHITE"]
+__all__ = (Palette, COLOR_BLACK, COLOR_WHITE)
