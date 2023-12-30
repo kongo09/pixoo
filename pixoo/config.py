@@ -1,5 +1,8 @@
 """Configuration of a Pixoo device"""
 
+from pixoo.find_device import get_pixoo_devices as _get_pixoo_devices
+import pixoo.exceptions as _exceptions
+
 class PixooConfig:
     """Class representing the configuration of a device"""
 
@@ -7,11 +10,29 @@ class PixooConfig:
     __size = 64
     __refresh_connection_automatically = True
 
+
+    @staticmethod
+    def __get_first_pixoo_device_address():
+        pixoo_devices = _get_pixoo_devices()
+        if len(pixoo_devices) > 1:
+            raise _exceptions.MoreThanOnePixooFound(f"PixoDevices: {pixoo_devices}")
+        pixoo_device = pixoo_devices[0]  # Just take first (and unique) item
+        dev_name = pixoo_device["DeviceName"]
+        dev_ip = pixoo_device["DevicePrivateIP"]
+        print(f" Pixo Device auto identified!!! DeviceName: {dev_name} (IP: {dev_ip})")
+        return dev_ip
+
+
     def __init__(self, address=None, size=64, refresh_connection_automatically=True):
         assert size in [16, 32, 64], (
             "Invalid screen size in pixels given. " "Valid options are 16, 32, and 64"
         )
-        self.__address = address
+
+        if address is None:
+            self.__address = self.__get_first_pixoo_device_address()
+        else:
+            self.__address = address
+
         self.__size = size
         self.__refresh_connection_automatically = refresh_connection_automatically
 

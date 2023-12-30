@@ -6,10 +6,8 @@ from PIL import Image, ImageOps
 
 from pixoo.config import PixooConfig
 from pixoo._colors import Palette
-from pixoo._font import retrieve_glyph, FONT_GICKO, FONT_PICO_8
+from pixoo._font import retrieve_glyph, FONT_PICO_8
 from pixoo.simulator import Simulator, SimulatorConfig
-from pixoo.find_device import get_pixoo_devices as _get_pixoo_devices
-import pixoo.exceptions as _exceptions
 from pixoo.api import PixooBaseApi
 
 
@@ -87,28 +85,24 @@ class Pixoo(PixooBaseApi):
 
     def __init__(
         self,
-        pixooConfig=PixooConfig(),
+        pixoo_config=PixooConfig(),
         debug=False,
         simulated=False,
         simulation_config=SimulatorConfig(),
     ):
         self.refresh_connection_automatically = (
-            PixooConfig.refresh_connection_automatically
+            pixoo_config.refresh_connection_automatically
         )
-        if pixooConfig.address is None:
-            self.__address = self.__get_first_pixoo_device_address()
-        else:
-            self.__address = pixooConfig.address
-        super().__init__(self.__address)
+        super().__init__(pixoo_config.address)
         self.debug = debug
-        self.size = pixooConfig.size
+        self.size = pixoo_config.size
         self.simulated = simulated
 
         # Total number of pixels
         self.pixel_count = self.size * self.size
 
         # Generate URL
-        self.__url = f"http://{self.address}/post"
+        self.__url = f"http://{pixoo_config.address}/post"
 
         # Prefill the buffer
         self.fill()
@@ -127,16 +121,6 @@ class Pixoo(PixooBaseApi):
         if self.simulated:
             self.__simulator = Simulator(self, simulation_config)
 
-    @staticmethod
-    def __get_first_pixoo_device_address():
-        pixoo_devices = _get_pixoo_devices()
-        if len(pixoo_devices) > 1:
-            raise _exceptions.MoreThanOnePixooFound(f"PixoDevices: {pixoo_devices}")
-        pixoo_device = pixoo_devices[0]  # Just take first (and unique) item
-        dev_name = pixoo_device["DeviceName"]
-        dev_ip = pixoo_device["DevicePrivateIP"]
-        print(f" Pixo Device auto identified!!! DeviceName: {dev_name} (IP: {dev_ip})")
-        return dev_ip
 
     def clear(self, rgb=Palette.BLACK):
         """Function to clear the buffer"""
