@@ -168,7 +168,8 @@ def retrieve_glyph(character, font):
     if character in font:
         return font[character]
 
-    return None
+    # unknown characters are returned as spaces
+    return font[' ']
 
 
 def supported_characters():
