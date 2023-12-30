@@ -130,10 +130,6 @@ class Pixoo(PixooBaseApi):
         """Function to clear the buffer"""
         self.fill_rgb(r, g, b)
 
-    def draw_character_at_location_rgb(self, character, x=0, y=0, r=255, g=255, b=255):
-        """Function to draw a character at a given location"""
-        self.draw_character(character, (x, y), (r, g, b))
-
     def draw_filled_rectangle(
         self, top_left_xy=(0, 0), bottom_right_xy=(1, 1), rgb=Palette.BLACK
     ):
@@ -300,6 +296,10 @@ class Pixoo(PixooBaseApi):
                     local_y = int(index / teiler)
                     self.draw_pixel((xy[0] + local_x, xy[1] + local_y), rgb)
 
+    def draw_character_at_location_rgb(self, character, x=0, y=0, r=255, g=255, b=255, font=None):
+        """Function to draw a character at a given location"""
+        self.draw_character(character, (x, y), (r, g, b), font)
+
     def draw_text(self, text, xy=(0, 0), rgb=Palette.WHITE, font=None):
         """Function to draw a text"""
         if font is None:
@@ -309,9 +309,9 @@ class Pixoo(PixooBaseApi):
             self.draw_character(character, (matrix + xy[0], xy[1]), rgb, font)
             matrix += retrieve_glyph(character, font)[-1] + 1
 
-    def draw_text_at_location_rgb(self, text, x, y, r, g, b):
+    def draw_text_at_location_rgb(self, text, x, y, r, g, b, font=None):
         """Function to draw a text"""
-        self.draw_text(text, (x, y), (r, g, b))
+        self.draw_text(text, (x, y), (r, g, b), font)
 
     def fill(self, rgb=Palette.BLACK):
         """Function to fill the buffer"""
