@@ -51,7 +51,7 @@ class Simulator:
         # Display the loading screen
         self.__root.update()
 
-    def display(self, buffer, counter):
+    def display(self, buffer, _):
         # Convert our buffer to a nice image
         image = Image.frombytes('RGB', self.__screen_size, bytes(buffer), 'raw')
 
