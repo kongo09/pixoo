@@ -138,7 +138,7 @@ class Pixoo(PixooBaseApi):
         self.pixel_count = self.size * self.size
 
         # Generate URL
-        self.__url = "http://{0}/post".format(self.address)
+        self.__url = f"http://{self.address}/post"
 
         # Prefill the buffer
         self.fill()
