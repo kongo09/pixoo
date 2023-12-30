@@ -4,7 +4,7 @@ from enum import IntEnum
 from PIL import Image, ImageOps
 
 from ._colors import Palette
-from ._font import retrieve_glyph
+from ._font import retrieve_glyph, FONT_GICKO, FONT_PICO_8
 from .simulator import Simulator, SimulatorConfig
 from pixoo.find_device import get_pixoo_devices as _get_pixoo_devices
 import pixoo.exceptions as _exceptions
@@ -121,14 +121,6 @@ class Pixoo(PixooBaseApi):
     def clear_rgb(self, r, g, b):
         self.fill_rgb(r, g, b)
 
-    def draw_character(self, character, xy=(0, 0), rgb=Palette.WHITE):
-        matrix = retrieve_glyph(character)
-        if matrix is not None:
-            for index, bit in enumerate(matrix):
-                if bit == 1:
-                    local_x = index % 3
-                    local_y = int(index / 3)
-                    self.draw_pixel((xy[0] + local_x, xy[1] + local_y), rgb)
 
     def draw_character_at_location_rgb(self, character, x=0, y=0, r=255, g=255,
                                        b=255):
@@ -258,9 +250,25 @@ class Pixoo(PixooBaseApi):
     def draw_pixel_at_location_rgb(self, x, y, r, g, b):
         self.draw_pixel((x, y), (r, g, b))
 
-    def draw_text(self, text, xy=(0, 0), rgb=Palette.WHITE):
+    def draw_character(self, character, xy=(0, 0), rgb=Palette.WHITE, font=None):
+        if font is None:
+            font = FONT_PICO_8
+        matrix = retrieve_glyph(character, font)
+        if matrix is not None:
+            teiler = matrix[-1]
+            for index, bit in enumerate(matrix):
+                if bit == 1:
+                    local_x = index % teiler
+                    local_y = int(index / teiler)
+                    self.draw_pixel((xy[0] + local_x, xy[1] + local_y), rgb)
+
+    def draw_text(self, text, xy=(0, 0), rgb=Palette.WHITE, font=None):
+        if font is None:
+            font = FONT_PICO_8
+        matrix = 0
         for index, character in enumerate(text):
-            self.draw_character(character, (index * 4 + xy[0], xy[1]), rgb)
+            self.draw_character(character, (matrix + xy[0], xy[1]), rgb, font)
+            matrix += retrieve_glyph(character, font)[-1] + 1
 
     def draw_text_at_location_rgb(self, text, x, y, r, g, b):
         self.draw_text(text, (x, y), (r, g, b))
