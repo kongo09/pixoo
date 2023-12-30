@@ -92,14 +92,17 @@ class PixooConfig:
 
     @property
     def address(self):
+        """Function to return the address of the Pixoo device"""
         return self.__address
 
     @property
     def size(self):
+        """Function to return the size of the Pixoo device"""
         return self.__size
 
     @property
-    def refreshConnectionAutomatically(self):
+    def refresh_connection_automatically(self):
+        """Function to return the setting for automatic refresh"""
         return self.__refresh_connection_automatically
 
 
@@ -120,7 +123,7 @@ class Pixoo(PixooBaseApi):
         simulation_config=SimulatorConfig(),
     ):
         self.refresh_connection_automatically = (
-            PixooConfig.refreshConnectionAutomatically
+            PixooConfig.refresh_connection_automatically
         )
         if pixooConfig.address is None:
             self.__address = self.__get_first_pixoo_device_address()
