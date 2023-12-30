@@ -1,3 +1,4 @@
+"""Pixoo class to access the Divoom Pixoo frame"""
 import base64
 from enum import IntEnum
 
@@ -12,6 +13,7 @@ from pixoo.api import PixooBaseApi
 
 
 def clamp(value, minimum=0, maximum=255):
+    """Function to keep a value in a range"""
     if value > maximum:
         return maximum
     if value < minimum:
@@ -21,30 +23,37 @@ def clamp(value, minimum=0, maximum=255):
 
 
 def clamp_color(rgb):
+    """Function to ensure the RGB color values are in the right range"""
     return clamp(rgb[0]), clamp(rgb[1]), clamp(rgb[2])
 
 
 def lerp(start, end, interpolant):
+    """Function to calculate increment on a linear interpolation in one dimension"""
     return start + interpolant * (end - start)
 
 
 def lerp_location(xy1, xy2, interpolant):
+    """Function to calculate increment on a linear interpolation in two dimensions"""
     return lerp(xy1[0], xy2[0], interpolant), lerp(xy1[1], xy2[1], interpolant)
 
 
 def minimum_amount_of_steps(xy1, xy2):
+    """Function to calculate the larger of horizontal or vertical distance"""
     return max(abs(xy1[0] - xy2[0]), abs(xy1[1] - xy2[1]))
 
 
 def rgb_to_hex_color(rgb):
+    """Function to convert RGB color to hex"""
     return f'#{rgb[0]:0>2X}{rgb[1]:0>2X}{rgb[2]:0>2X}'
 
 
 def round_location(xy):
+    """Function to round coordinates"""
     return round(xy[0]), round(xy[1])
 
 
 class Channel(IntEnum):
+    """Class representing a Channel"""
     FACES = 0
     CLOUD = 1
     VISUALIZER = 2
@@ -52,16 +61,19 @@ class Channel(IntEnum):
 
 
 class ImageResampleMode(IntEnum):
+    """Class representing an image sample mode"""
     PIXEL_ART = Image.Resampling.NEAREST
     SMOOTH = Image.Resampling.LANCZOS
 
 
 class TextScrollDirection(IntEnum):
+    """Class representing the text scroll direction"""
     LEFT = 0
     RIGHT = 1
 
 
 class Pixoo(PixooBaseApi):
+    """Class representing the Pixoo device"""
     __buffer = []
     __buffers_send = 0
     __counter = 0
