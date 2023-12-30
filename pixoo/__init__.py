@@ -6,7 +6,7 @@ from PIL import Image, ImageOps
 
 from pixoo.config import PixooConfig
 from pixoo._colors import Palette
-from pixoo._font import retrieve_glyph, FONT_PICO_8
+from pixoo.font import Font
 from pixoo.simulator import Simulator, SimulatorConfig
 from pixoo.api import PixooBaseApi
 
@@ -245,7 +245,7 @@ class Pixoo(PixooBaseApi):
             if self.debug:
                 limit = self.size - 1
                 print(
-                    f"[!] Invalid coordinates given: ({xy[0]}, {xy[1]}) (maximum coordinates are ({limit}, {limit})"
+                    f"[!] Invalid coordinates given: ({xy[0]}, {xy[1]}) (maximum coordinates are ({limit}, {limit})" # pylint: disable=line-too-long
                 )
             return
 
@@ -286,8 +286,8 @@ class Pixoo(PixooBaseApi):
     def draw_character(self, character, xy=(0, 0), rgb=Palette.WHITE, font=None):
         """Function to draw a character"""
         if font is None:
-            font = FONT_PICO_8
-        matrix = retrieve_glyph(character, font)
+            font = Font.FONT_PICO_8
+        matrix = Font.retrieve_glyph(character, font)
         if matrix is not None:
             teiler = matrix[-1]
             for index, bit in enumerate(matrix):
@@ -303,11 +303,11 @@ class Pixoo(PixooBaseApi):
     def draw_text(self, text, xy=(0, 0), rgb=Palette.WHITE, font=None):
         """Function to draw a text"""
         if font is None:
-            font = FONT_PICO_8
+            font = Font.FONT_PICO_8
         matrix = 0
         for __, character in enumerate(text):
             self.draw_character(character, (matrix + xy[0], xy[1]), rgb, font)
-            matrix += retrieve_glyph(character, font)[-1] + 1
+            matrix += Font.retrieve_glyph(character, font)[-1] + 1
 
     def draw_text_at_location_rgb(self, text, x, y, r, g, b, font=None):
         """Function to draw a text"""
