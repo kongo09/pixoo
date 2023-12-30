@@ -3,9 +3,9 @@ from enum import IntEnum
 
 from PIL import Image, ImageOps
 
-from ._colors import Palette
-from ._font import retrieve_glyph
-from .simulator import Simulator, SimulatorConfig
+from pixoo._colors import Palette
+from pixoo._font import retrieve_glyph, FONT_GICKO, FONT_PICO_8
+from pixoo.simulator import Simulator, SimulatorConfig
 from pixoo.find_device import get_pixoo_devices as _get_pixoo_devices
 import pixoo.exceptions as _exceptions
 from pixoo.api import PixooBaseApi
@@ -52,8 +52,8 @@ class Channel(IntEnum):
 
 
 class ImageResampleMode(IntEnum):
-    PIXEL_ART = Image.NEAREST
-    SMOOTH = Image.LANCZOS
+    PIXEL_ART = Image.Resampling.NEAREST
+    SMOOTH = Image.Resampling.LANCZOS
 
 
 class TextScrollDirection(IntEnum):
@@ -121,14 +121,6 @@ class Pixoo(PixooBaseApi):
     def clear_rgb(self, r, g, b):
         self.fill_rgb(r, g, b)
 
-    def draw_character(self, character, xy=(0, 0), rgb=Palette.WHITE):
-        matrix = retrieve_glyph(character)
-        if matrix is not None:
-            for index, bit in enumerate(matrix):
-                if bit == 1:
-                    local_x = index % 3
-                    local_y = int(index / 3)
-                    self.draw_pixel((xy[0] + local_x, xy[1] + local_y), rgb)
 
     def draw_character_at_location_rgb(self, character, x=0, y=0, r=255, g=255,
                                        b=255):
@@ -258,9 +250,25 @@ class Pixoo(PixooBaseApi):
     def draw_pixel_at_location_rgb(self, x, y, r, g, b):
         self.draw_pixel((x, y), (r, g, b))
 
-    def draw_text(self, text, xy=(0, 0), rgb=Palette.WHITE):
+    def draw_character(self, character, xy=(0, 0), rgb=Palette.WHITE, font=None):
+        if font is None:
+            font = FONT_PICO_8
+        matrix = retrieve_glyph(character, font)
+        if matrix is not None:
+            teiler = matrix[-1]
+            for index, bit in enumerate(matrix):
+                if bit == 1:
+                    local_x = index % teiler
+                    local_y = int(index / teiler)
+                    self.draw_pixel((xy[0] + local_x, xy[1] + local_y), rgb)
+
+    def draw_text(self, text, xy=(0, 0), rgb=Palette.WHITE, font=None):
+        if font is None:
+            font = FONT_PICO_8
+        matrix = 0
         for index, character in enumerate(text):
-            self.draw_character(character, (index * 4 + xy[0], xy[1]), rgb)
+            self.draw_character(character, (matrix + xy[0], xy[1]), rgb, font)
+            matrix += retrieve_glyph(character, font)[-1] + 1
 
     def draw_text_at_location_rgb(self, text, x, y, r, g, b):
         self.draw_text(text, (x, y), (r, g, b))
@@ -275,14 +283,8 @@ class Pixoo(PixooBaseApi):
         self.fill((r, g, b))
 
     def get_settings(self):
-        response = requests.post(self.__url, json.dumps({
-            'Command': 'Channel/GetAllConf'
-        }))
-        data = response.json()
-        if data['error_code'] != 0:
-            self.__error(data)
-        else:
-            return {key: val for key, val in data.items() if key != 'error_code'}
+        data = self.send_command("Channel/GetAllConf")
+        return {key: val for key, val in data.items() if key != 'error_code'}
 
     def push(self):
         self.__send_buffer()
@@ -465,4 +467,4 @@ class Pixoo(PixooBaseApi):
         return self.__buffer
 
 
-__all__ = (Channel, ImageResampleMode, Pixoo, TextScrollDirection)
+__all__ = ["Channel", "ImageResampleMode", "Pixoo", "TextScrollDirection"]
