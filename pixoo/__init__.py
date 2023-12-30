@@ -44,7 +44,7 @@ def minimum_amount_of_steps(xy1, xy2):
 
 def rgb_to_hex_color(rgb):
     """Function to convert RGB color to hex"""
-    return f'#{rgb[0]:0>2X}{rgb[1]:0>2X}{rgb[2]:0>2X}'
+    return f"#{rgb[0]:0>2X}{rgb[1]:0>2X}{rgb[2]:0>2X}"
 
 
 def round_location(xy):
@@ -54,6 +54,7 @@ def round_location(xy):
 
 class Channel(IntEnum):
     """Class representing a Channel"""
+
     FACES = 0
     CLOUD = 1
     VISUALIZER = 2
@@ -62,45 +63,79 @@ class Channel(IntEnum):
 
 class ImageResampleMode(IntEnum):
     """Class representing an image sample mode"""
+
     PIXEL_ART = Image.Resampling.NEAREST
     SMOOTH = Image.Resampling.LANCZOS
 
 
 class TextScrollDirection(IntEnum):
     """Class representing the text scroll direction"""
+
     LEFT = 0
     RIGHT = 1
 
 
+class PixooConfig:
+    """Class representing the configuration of a device"""
+
+    __address = None
+    __size = 64
+    __refresh_connection_automatically = True
+
+    def __init__(self, address=None, size=64, refresh_connection_automatically=True):
+        assert size in [16, 32, 64], (
+            "Invalid screen size in pixels given. " "Valid options are 16, 32, and 64"
+        )
+        __address = address
+        __size = size
+        __refresh_connection_automatically = refresh_connection_automatically
+
+    @property
+    def address(self):
+        return self.__address
+
+    @property
+    def size(self):
+        return self.__size
+
+    @property
+    def refreshConnectionAutomatically(self):
+        return self.__refresh_connection_automatically
+
+
 class Pixoo(PixooBaseApi):
     """Class representing the Pixoo device"""
+
     __buffer = []
     __buffers_send = 0
     __counter = 0
     __refresh_counter_limit = 32
     __simulator = None
 
-    def __init__(self, address=None, size=64, debug=False, refresh_connection_automatically=True, simulated=False,
-                 simulation_config=SimulatorConfig()):
-        assert size in [16, 32, 64], \
-            'Invalid screen size in pixels given. ' \
-            'Valid options are 16, 32, and 64'
-
-        self.refresh_connection_automatically = refresh_connection_automatically
-        if address is None:
+    def __init__(
+        self,
+        pixooConfig=PixooConfig(),
+        debug=False,
+        simulated=False,
+        simulation_config=SimulatorConfig(),
+    ):
+        self.refresh_connection_automatically = (
+            PixooConfig.refreshConnectionAutomatically
+        )
+        if pixooConfig.address is None:
             self.__address = self.__get_first_pixoo_device_address()
         else:
-            self.__address = address
+            self.__address = pixooConfig.address
         super().__init__(self.__address)
         self.debug = debug
-        self.size = size
+        self.size = pixooConfig.size
         self.simulated = simulated
 
         # Total number of pixels
         self.pixel_count = self.size * self.size
 
         # Generate URL
-        self.__url = 'http://{0}/post'.format(self.address)
+        self.__url = "http://{0}/post".format(self.address)
 
         # Prefill the buffer
         self.fill()
@@ -109,7 +144,10 @@ class Pixoo(PixooBaseApi):
         self.__load_counter()
 
         # Resetting if needed
-        if self.refresh_connection_automatically and self.__counter > self.__refresh_counter_limit:
+        if (
+            self.refresh_connection_automatically
+            and self.__counter > self.__refresh_counter_limit
+        ):
             self.__reset_counter()
 
         # We're going to need a simulator
@@ -133,32 +171,42 @@ class Pixoo(PixooBaseApi):
     def clear_rgb(self, r, g, b):
         self.fill_rgb(r, g, b)
 
-
-    def draw_character_at_location_rgb(self, character, x=0, y=0, r=255, g=255,
-                                       b=255):
+    def draw_character_at_location_rgb(self, character, x=0, y=0, r=255, g=255, b=255):
         self.draw_character(character, (x, y), (r, g, b))
 
-    def draw_filled_rectangle(self, top_left_xy=(0, 0), bottom_right_xy=(1, 1),
-                              rgb=Palette.BLACK):
+    def draw_filled_rectangle(
+        self, top_left_xy=(0, 0), bottom_right_xy=(1, 1), rgb=Palette.BLACK
+    ):
         for y in range(top_left_xy[1], bottom_right_xy[1] + 1):
             for x in range(top_left_xy[0], bottom_right_xy[0] + 1):
                 self.draw_pixel((x, y), rgb)
 
-    def draw_filled_rectangle_from_top_left_to_bottom_right_rgb(self,
-                                                                top_left_x=0,
-                                                                top_left_y=0,
-                                                                bottom_right_x=1,
-                                                                bottom_right_y=1,
-                                                                r=0, g=0, b=0):
-        self.draw_filled_rectangle((top_left_x, top_left_y),
-                                   (bottom_right_x, bottom_right_y), (r, g, b))
+    def draw_filled_rectangle_from_top_left_to_bottom_right_rgb(
+        self,
+        top_left_x=0,
+        top_left_y=0,
+        bottom_right_x=1,
+        bottom_right_y=1,
+        r=0,
+        g=0,
+        b=0,
+    ):
+        self.draw_filled_rectangle(
+            (top_left_x, top_left_y), (bottom_right_x, bottom_right_y), (r, g, b)
+        )
 
-    def draw_image(self, image_path_or_object, xy=(0, 0),
-                   image_resample_mode=ImageResampleMode.PIXEL_ART,
-                   pad_resample=False):
-        image = image_path_or_object if isinstance(image_path_or_object,
-                                                   Image.Image) else Image.open(
-            image_path_or_object)
+    def draw_image(
+        self,
+        image_path_or_object,
+        xy=(0, 0),
+        image_resample_mode=ImageResampleMode.PIXEL_ART,
+        pad_resample=False,
+    ):
+        image = (
+            image_path_or_object
+            if isinstance(image_path_or_object, Image.Image)
+            else Image.open(image_path_or_object)
+        )
         size = image.size
         width = size[0]
         height = size[1]
@@ -166,18 +214,18 @@ class Pixoo(PixooBaseApi):
         # See if it needs to be scaled/resized to fit the display
         if width > self.size or height > self.size:
             if pad_resample:
-                image = ImageOps.pad(image, (self.size, self.size),
-                                     image_resample_mode)
+                image = ImageOps.pad(image, (self.size, self.size), image_resample_mode)
             else:
                 image.thumbnail((self.size, self.size), image_resample_mode)
 
             if self.debug:
                 print(
                     f'[.] Resized image to fit on screen (saving aspect ratio): "{image_path_or_object}" ({width}, {height}) '
-                    f'-> ({image.size[0]}, {image.size[1]})')
+                    f"-> ({image.size[0]}, {image.size[1]})"
+                )
 
         # Convert the loaded image to RGBA to also support transparency
-        rgb_image = image.convert('RGBA')
+        rgb_image = image.convert("RGBA")
 
         # Iterate over all pixels in the image that are left and buffer them
         for y in range(image.size[1]):
@@ -192,11 +240,15 @@ class Pixoo(PixooBaseApi):
                 placed_y = y + xy[1]
                 if self.size - 1 < placed_y or placed_y < 0:
                     continue
-                self.draw_pixel((placed_x, placed_y),
-                                rgb_image.getpixel(location))
+                self.draw_pixel((placed_x, placed_y), rgb_image.getpixel(location))
 
-    def draw_image_at_location(self, image_path_or_object, x, y,
-                               image_resample_mode=ImageResampleMode.PIXEL_ART):
+    def draw_image_at_location(
+        self,
+        image_path_or_object,
+        x,
+        y,
+        image_resample_mode=ImageResampleMode.PIXEL_ART,
+    ):
         self.draw_image(image_path_or_object, (x, y), image_resample_mode)
 
     def draw_line(self, start_xy, stop_xy, rgb=Palette.WHITE):
@@ -213,15 +265,15 @@ class Pixoo(PixooBaseApi):
                 interpolant = step / amount_of_steps
 
             # Add a pixel as a rounded location
-            line.add(
-                round_location(lerp_location(start_xy, stop_xy, interpolant)))
+            line.add(round_location(lerp_location(start_xy, stop_xy, interpolant)))
 
         # Draw the actual pixel line
         for pixel in line:
             self.draw_pixel(pixel, rgb)
 
-    def draw_line_from_start_to_stop_rgb(self, start_x, start_y, stop_x, stop_y,
-                                         r=255, g=255, b=255):
+    def draw_line_from_start_to_stop_rgb(
+        self, start_x, start_y, stop_x, stop_y, r=255, g=255, b=255
+    ):
         self.draw_line((start_x, start_y), (stop_x, stop_y), (r, g, b))
 
     def draw_pixel(self, xy, rgb):
@@ -230,7 +282,8 @@ class Pixoo(PixooBaseApi):
             if self.debug:
                 limit = self.size - 1
                 print(
-                    f'[!] Invalid coordinates given: ({xy[0]}, {xy[1]}) (maximum coordinates are ({limit}, {limit})')
+                    f"[!] Invalid coordinates given: ({xy[0]}, {xy[1]}) (maximum coordinates are ({limit}, {limit})"
+                )
             return
 
         # Calculate the index
@@ -243,7 +296,9 @@ class Pixoo(PixooBaseApi):
         # Validate the index
         if index < 0 or index >= self.pixel_count:
             if self.debug:
-                print(f'[!] Invalid index given: {index} (maximum index is {self.pixel_count - 1})')
+                print(
+                    f"[!] Invalid index given: {index} (maximum index is {self.pixel_count - 1})"
+                )
             return
 
         # Clamp the color, just to be safe
@@ -296,16 +351,22 @@ class Pixoo(PixooBaseApi):
 
     def get_settings(self):
         data = self.send_command("Channel/GetAllConf")
-        return {key: val for key, val in data.items() if key != 'error_code'}
+        return {key: val for key, val in data.items() if key != "error_code"}
 
     def push(self):
         self.__send_buffer()
 
-    def send_text(self, text, xy=(0, 0), color=Palette.WHITE, identifier=1,
-                  font=2, width=64,
-                  movement_speed=0,
-                  direction=TextScrollDirection.LEFT):
-
+    def send_text(
+        self,
+        text,
+        xy=(0, 0),
+        color=Palette.WHITE,
+        identifier=1,
+        font=2,
+        width=64,
+        movement_speed=0,
+        direction=TextScrollDirection.LEFT,
+    ):
         # This won't be possible
         if self.simulated:
             return
@@ -401,7 +462,7 @@ class Pixoo(PixooBaseApi):
 
     def __error(self, error):
         if self.debug:
-            print('[x] Error on request ' + str(self.__counter))
+            print("[x] Error on request " + str(self.__counter))
             print(error)
 
     def __load_counter(self):
@@ -411,22 +472,24 @@ class Pixoo(PixooBaseApi):
             return
 
         data = self.send_command(command="Draw/GetHttpGifId")
-        self.__counter = int(data['PicId'])
+        self.__counter = int(data["PicId"])
         if self.debug:
-            print('[.] Counter loaded and stored: ' + str(self.__counter))
+            print("[.] Counter loaded and stored: " + str(self.__counter))
 
     def __send_buffer(self):
-
         # Add to the internal counter
         self.__counter = self.__counter + 1
 
         # Check if we've passed the limit and reset the counter for the animation remotely
-        if self.refresh_connection_automatically and self.__counter >= self.__refresh_counter_limit:
+        if (
+            self.refresh_connection_automatically
+            and self.__counter >= self.__refresh_counter_limit
+        ):
             self.__reset_counter()
             self.__counter = 1
 
         if self.debug:
-            print(f'[.] Counter set to {self.__counter}')
+            print(f"[.] Counter set to {self.__counter}")
 
         # If it's simulated, we don't need to actually push it to the divoom
         if self.simulated:
@@ -449,11 +512,11 @@ class Pixoo(PixooBaseApi):
         self.__buffers_send = self.__buffers_send + 1
 
         if self.debug:
-            print(f'[.] Pushed {self.__buffers_send} buffers')
+            print(f"[.] Pushed {self.__buffers_send} buffers")
 
     def __reset_counter(self):
         if self.debug:
-            print('[.] Resetting counter remotely')
+            print("[.] Resetting counter remotely")
 
         # This won't be possible
         if self.simulated:
@@ -465,17 +528,17 @@ class Pixoo(PixooBaseApi):
 
     @property
     def url(self):
-        """ Get device URL """
+        """Get device URL"""
         return self.__url
 
     @property
     def address(self):
-        """ Get device address """
+        """Get device address"""
         return self.__address
 
     @property
     def buffer(self):
-        """ Get buffer of device """
+        """Get buffer of device"""
         return self.__buffer
 
 
