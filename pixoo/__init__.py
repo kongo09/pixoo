@@ -51,8 +51,8 @@ class Channel(IntEnum):
 
 
 class ImageResampleMode(IntEnum):
-    PIXEL_ART = Image.Resampling.NEAREST
-    SMOOTH = Image.Resampling.LANCZOS
+    PIXEL_ART = Image.NEAREST
+    SMOOTH = Image.LANCZOS
 
 
 class TextScrollDirection(IntEnum):
@@ -252,7 +252,7 @@ class Pixoo:
     def fill(self, rgb=Palette.BLACK):
         self.__buffer = []
         rgb = clamp_color(rgb)
-        for _ in range(self.pixel_count):
+        for index in range(self.pixel_count):
             self.__buffer.extend(rgb)
 
     def fill_rgb(self, r, g, b):
@@ -261,7 +261,7 @@ class Pixoo:
     def get_settings(self):
         response = requests.post(self.__url, json.dumps({
             'Command': 'Channel/GetAllConf'
-        }), timeout=10)
+        }))
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
@@ -294,7 +294,7 @@ class Pixoo:
             'speed': movement_speed,
             'TextString': text,
             'color': rgb_to_hex_color(color)
-        }), timeout=10)
+        }))
 
         data = response.json()
         if data['error_code'] != 0:
@@ -309,7 +309,7 @@ class Pixoo:
         response = requests.post(self.__url, json.dumps({
             'Command': 'Channel/SetBrightness',
             'Brightness': brightness
-        }), timeout=10)
+        }))
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
@@ -322,7 +322,7 @@ class Pixoo:
         response = requests.post(self.__url, json.dumps({
             'Command': 'Channel/SetIndex',
             'SelectIndex': int(channel)
-        }), timeout=10)
+        }))
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
@@ -335,7 +335,7 @@ class Pixoo:
         response = requests.post(self.__url, json.dumps({
             'Command': 'Channel/SetClockSelectId',
             'ClockId': clock_id
-        }), timeout=10)
+        }))
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
@@ -348,7 +348,7 @@ class Pixoo:
         response = requests.post(self.__url, json.dumps({
             'Command': 'Channel/SetCustomPageIndex',
             'CustomPageIndex': index
-        }), timeout=10)
+        }))
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
@@ -364,7 +364,7 @@ class Pixoo:
         response = requests.post(self.__url, json.dumps({
             'Command': 'Channel/OnOffScreen',
             'OnOff': 1 if on else 0
-        }), timeout=10)
+        }))
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
@@ -382,13 +382,13 @@ class Pixoo:
         response = requests.post(self.__url, json.dumps({
             'Command': 'Channel/SetEqPosition',
             'EqPosition': equalizer_position
-        }), timeout=10)
+        }))
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
 
-    # def __clamp_location(self, xy):
-    #     return clamp(xy[0], 0, self.size - 1), clamp(xy[1], 0, self.size - 1)
+    def __clamp_location(self, xy):
+        return clamp(xy[0], 0, self.size - 1), clamp(xy[1], 0, self.size - 1)
 
     def __error(self, error):
         if self.debug:
@@ -401,7 +401,7 @@ class Pixoo:
             self.__counter = 1
             return
 
-        response = requests.post(self.__url, '{"Command": "Draw/GetHttpGifId"}', timeout=10)
+        response = requests.post(self.__url, '{"Command": "Draw/GetHttpGifId"}')
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
@@ -440,7 +440,7 @@ class Pixoo:
             'PicID': self.__counter,
             'PicSpeed': 1000,
             'PicData': str(base64.b64encode(bytearray(self.__buffer)).decode())
-        }), timeout=10)
+        }))
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
@@ -452,7 +452,7 @@ class Pixoo:
 
     def __reset_counter(self):
         if self.debug:
-            print("[.] Resetting counter remotely")
+            print(f'[.] Resetting counter remotely')
 
         # This won't be possible
         if self.simulated:
@@ -460,10 +460,10 @@ class Pixoo:
 
         response = requests.post(self.__url, json.dumps({
             'Command': 'Draw/ResetHttpGifId'
-        }), timeout=10)
+        }))
         data = response.json()
         if data['error_code'] != 0:
             self.__error(data)
 
 
-__all__ = ["Channel", "ImageResampleMode", "Pixoo", "TextScrollDirection"]
+__all__ = (Channel, ImageResampleMode, Pixoo, TextScrollDirection)
