@@ -3,9 +3,9 @@ from enum import IntEnum
 
 from PIL import Image, ImageOps
 
-from ._colors import Palette
-from ._font import retrieve_glyph, FONT_GICKO, FONT_PICO_8
-from .simulator import Simulator, SimulatorConfig
+from pixoo._colors import Palette
+from pixoo._font import retrieve_glyph, FONT_GICKO, FONT_PICO_8
+from pixoo.simulator import Simulator, SimulatorConfig
 from pixoo.find_device import get_pixoo_devices as _get_pixoo_devices
 import pixoo.exceptions as _exceptions
 from pixoo.api import PixooBaseApi
@@ -52,8 +52,8 @@ class Channel(IntEnum):
 
 
 class ImageResampleMode(IntEnum):
-    PIXEL_ART = Image.NEAREST
-    SMOOTH = Image.LANCZOS
+    PIXEL_ART = Image.Resampling.NEAREST
+    SMOOTH = Image.Resampling.LANCZOS
 
 
 class TextScrollDirection(IntEnum):
@@ -283,14 +283,8 @@ class Pixoo(PixooBaseApi):
         self.fill((r, g, b))
 
     def get_settings(self):
-        response = requests.post(self.__url, json.dumps({
-            'Command': 'Channel/GetAllConf'
-        }))
-        data = response.json()
-        if data['error_code'] != 0:
-            self.__error(data)
-        else:
-            return {key: val for key, val in data.items() if key != 'error_code'}
+        data = self.send_command("Channel/GetAllConf")
+        return {key: val for key, val in data.items() if key != 'error_code'}
 
     def push(self):
         self.__send_buffer()
@@ -473,4 +467,4 @@ class Pixoo(PixooBaseApi):
         return self.__buffer
 
 
-__all__ = (Channel, ImageResampleMode, Pixoo, TextScrollDirection)
+__all__ = ["Channel", "ImageResampleMode", "Pixoo", "TextScrollDirection"]
