@@ -169,17 +169,21 @@ class Pixoo(PixooBaseApi):
         return dev_ip
 
     def clear(self, rgb=Palette.BLACK):
+        """Function to clear the buffer"""
         self.fill(rgb)
 
     def clear_rgb(self, r, g, b):
+        """Function to clear the buffer"""
         self.fill_rgb(r, g, b)
 
     def draw_character_at_location_rgb(self, character, x=0, y=0, r=255, g=255, b=255):
+        """Function to draw a character at a given location"""
         self.draw_character(character, (x, y), (r, g, b))
 
     def draw_filled_rectangle(
         self, top_left_xy=(0, 0), bottom_right_xy=(1, 1), rgb=Palette.BLACK
     ):
+        """Function to draw a filled rectangle"""
         for y in range(top_left_xy[1], bottom_right_xy[1] + 1):
             for x in range(top_left_xy[0], bottom_right_xy[0] + 1):
                 self.draw_pixel((x, y), rgb)
@@ -194,6 +198,7 @@ class Pixoo(PixooBaseApi):
         g=0,
         b=0,
     ):
+        """Function to draw a filled rectangle"""
         self.draw_filled_rectangle(
             (top_left_x, top_left_y), (bottom_right_x, bottom_right_y), (r, g, b)
         )
@@ -205,6 +210,7 @@ class Pixoo(PixooBaseApi):
         image_resample_mode=ImageResampleMode.PIXEL_ART,
         pad_resample=False,
     ):
+        """Function to draw an image at a location"""
         image = (
             image_path_or_object
             if isinstance(image_path_or_object, Image.Image)
@@ -252,9 +258,11 @@ class Pixoo(PixooBaseApi):
         y,
         image_resample_mode=ImageResampleMode.PIXEL_ART,
     ):
+        """Function to draw an image at a location"""
         self.draw_image(image_path_or_object, (x, y), image_resample_mode)
 
     def draw_line(self, start_xy, stop_xy, rgb=Palette.WHITE):
+        """Function to draw a line"""
         line = set()
 
         # Calculate the amount of steps needed between the points to draw a nice line
@@ -277,9 +285,11 @@ class Pixoo(PixooBaseApi):
     def draw_line_from_start_to_stop_rgb(
         self, start_x, start_y, stop_x, stop_y, r=255, g=255, b=255
     ):
+        """Function to draw a line"""
         self.draw_line((start_x, start_y), (stop_x, stop_y), (r, g, b))
 
     def draw_pixel(self, xy, rgb):
+        """Function to draw a pixel"""
         # If it's not on the screen, we're not going to bother
         if xy[0] < 0 or xy[0] >= self.size or xy[1] < 0 or xy[1] >= self.size:
             if self.debug:
@@ -296,6 +306,7 @@ class Pixoo(PixooBaseApi):
         self.draw_pixel_at_index(index, rgb)
 
     def draw_pixel_at_index(self, index, rgb):
+        """Function to draw a pixel"""
         # Validate the index
         if index < 0 or index >= self.pixel_count:
             if self.debug:
@@ -315,12 +326,15 @@ class Pixoo(PixooBaseApi):
         self.__buffer[index + 2] = rgb[2]
 
     def draw_pixel_at_index_rgb(self, index, r, g, b):
+        """Function to draw a pixel"""
         self.draw_pixel_at_index(index, (r, g, b))
 
     def draw_pixel_at_location_rgb(self, x, y, r, g, b):
+        """Function to draw a pixel"""
         self.draw_pixel((x, y), (r, g, b))
 
     def draw_character(self, character, xy=(0, 0), rgb=Palette.WHITE, font=None):
+        """Function to draw a character"""
         if font is None:
             font = FONT_PICO_8
         matrix = retrieve_glyph(character, font)
@@ -333,30 +347,36 @@ class Pixoo(PixooBaseApi):
                     self.draw_pixel((xy[0] + local_x, xy[1] + local_y), rgb)
 
     def draw_text(self, text, xy=(0, 0), rgb=Palette.WHITE, font=None):
+        """Function to draw a text"""
         if font is None:
             font = FONT_PICO_8
         matrix = 0
-        for index, character in enumerate(text):
+        for __, character in enumerate(text):
             self.draw_character(character, (matrix + xy[0], xy[1]), rgb, font)
             matrix += retrieve_glyph(character, font)[-1] + 1
 
     def draw_text_at_location_rgb(self, text, x, y, r, g, b):
+        """Function to draw a text"""
         self.draw_text(text, (x, y), (r, g, b))
 
     def fill(self, rgb=Palette.BLACK):
+        """Function to fill the buffer"""
         self.__buffer = []
         rgb = clamp_color(rgb)
-        for index in range(self.pixel_count):
+        for __ in range(self.pixel_count):
             self.__buffer.extend(rgb)
 
     def fill_rgb(self, r, g, b):
+        """Function to fill the buffer"""
         self.fill((r, g, b))
 
     def get_settings(self):
+        """Function to retreive the settings"""
         data = self.send_command("Channel/GetAllConf")
         return {key: val for key, val in data.items() if key != "error_code"}
 
     def push(self):
+        """Function to send the buffer to the device"""
         self.__send_buffer()
 
     def send_text(
@@ -370,6 +390,7 @@ class Pixoo(PixooBaseApi):
         movement_speed=0,
         direction=TextScrollDirection.LEFT,
     ):
+        """Function to send text directly to the device without the buffer"""
         # This won't be possible
         if self.simulated:
             return
@@ -391,6 +412,7 @@ class Pixoo(PixooBaseApi):
         )
 
     def set_brightness(self, brightness):
+        """Function to set the brightness"""
         # This won't be possible
         if self.simulated:
             return
@@ -402,6 +424,7 @@ class Pixoo(PixooBaseApi):
         )
 
     def set_channel(self, channel):
+        """Function to set the channel"""
         # This won't be possible
         if self.simulated:
             return
@@ -412,6 +435,7 @@ class Pixoo(PixooBaseApi):
         )
 
     def set_clock(self, clock_id):
+        """Function to set the clock"""
         # This won't be possible
         if self.simulated:
             return
@@ -422,19 +446,23 @@ class Pixoo(PixooBaseApi):
         )
 
     def set_custom_channel(self, index):
+        """Function to set the custom channel, which is channel #3"""
         self.set_custom_page(index)
         self.set_channel(3)
 
     def set_custom_page(self, index):
+        """Function to set a custom page"""
         self.send_command(
             command="Channel/SetCustomPageIndex",
             custom_page_index=index,
         )
 
     def set_face(self, face_id):
+        """Function to set a (clock) face"""
         self.set_clock(face_id)
 
     def set_screen(self, on=True):
+        """Function to switch screen on or off"""
         # This won't be possible
         if self.simulated:
             return
@@ -445,12 +473,15 @@ class Pixoo(PixooBaseApi):
         )
 
     def set_screen_off(self):
+        """Function to switch screen off"""
         self.set_screen(False)
 
     def set_screen_on(self):
+        """Function to set screen on"""
         self.set_screen(True)
 
     def set_visualizer(self, equalizer_position):
+        """Function to set equalizer position"""
         # This won't be possible
         if self.simulated:
             return
@@ -460,15 +491,18 @@ class Pixoo(PixooBaseApi):
             eq_position=equalizer_position,
         )
 
-    def __clamp_location(self, xy):
-        return clamp(xy[0], 0, self.size - 1), clamp(xy[1], 0, self.size - 1)
+    # def __clamp_location(self, xy):
+    #     """Function ensure location is in range"""
+    #     return clamp(xy[0], 0, self.size - 1), clamp(xy[1], 0, self.size - 1)
 
-    def __error(self, error):
-        if self.debug:
-            print("[x] Error on request " + str(self.__counter))
-            print(error)
+    # def __error(self, error):
+    #     """Function to print debug error"""
+    #     if self.debug:
+    #         print("[x] Error on request " + str(self.__counter))
+    #         print(error)
 
     def __load_counter(self):
+        """Function to load counter from device"""
         # Just assume it's starting at the beginning if we're simulating
         if self.simulated:
             self.__counter = 1
@@ -480,6 +514,7 @@ class Pixoo(PixooBaseApi):
             print("[.] Counter loaded and stored: " + str(self.__counter))
 
     def __send_buffer(self):
+        """Function to send buffer to device"""
         # Add to the internal counter
         self.__counter = self.__counter + 1
 
@@ -518,6 +553,7 @@ class Pixoo(PixooBaseApi):
             print(f"[.] Pushed {self.__buffers_send} buffers")
 
     def __reset_counter(self):
+        """Function to reset the counter"""
         if self.debug:
             print("[.] Resetting counter remotely")
 
