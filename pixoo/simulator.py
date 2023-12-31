@@ -16,7 +16,6 @@ class Simulator:
     __image_size = (64, 64)
     __root = None
     __screen_size = (64, 64)
-    __window = None
 
     def __init__(self, pixoo, config):
         self.__config = config
@@ -24,7 +23,7 @@ class Simulator:
         self.__image_size = (pixoo.size * scale, pixoo.size * scale)
         self.__root = tkinter.Tk()
         self.__root.title('Pixoo Simulator')
-        self.__root.geometry('{0}x{1}'.format(self.__image_size[0], self.__image_size[1]))
+        self.__root.geometry(f"{self.__image_size[0]}x{self.__image_size[1]}")
         self.__root.attributes('-topmost', True)
 
         self.__canvas = tkinter.Canvas(self.__root, height=self.__image_size[1], width=self.__image_size[0])
@@ -51,7 +50,7 @@ class Simulator:
         # Display the loading screen
         self.__root.update()
 
-    def display(self, buffer, counter):
+    def display(self, buffer, __):
         # Convert our buffer to a nice image
         image = Image.frombytes('RGB', self.__screen_size, bytes(buffer), 'raw')
 
@@ -65,8 +64,8 @@ class Simulator:
         self.__root.update()
 
     def __prepare_image(self, image):
-        image = image.resize(self.__image_size, Image.NEAREST)
+        image = image.resize(self.__image_size, Image.Resampling.NEAREST)
         return ImageTk.PhotoImage(image)
 
 
-__all__ = (Simulator, SimulatorConfig)
+__all__ = ["Simulator", "SimulatorConfig"]
