@@ -179,7 +179,7 @@ class Pixoo(PixooBaseApi):
 
             if self.debug:
                 print(
-                    f'[.] Resized image to fit on screen (saving aspect ratio): "{image_path_or_object}" ({width}, {height}) '
+                    f'[.] Resized image to fit on screen (saving aspect ratio): "{image_path_or_object}" ({width}, {height}) ' # pylint: disable=line-too-long
                     f"-> ({image.size[0]}, {image.size[1]})"
                 )
 
