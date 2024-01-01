@@ -1,5 +1,4 @@
-from pixoo import Channel, ImageResampleMode, Pixoo
-from pixoo.font import Font
+from pixoo import Channel, ImageResampleMode, Pixoo, Font
 
 '''
 Create a connection to a Pixoo

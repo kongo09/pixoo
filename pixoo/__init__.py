@@ -6,6 +6,7 @@ from PIL import Image, ImageOps
 
 from pixoo.config import PixooConfig
 from pixoo._colors import Palette
+from pixoo.exceptions import NoPixooDevicesFound
 from pixoo.font import Font
 from pixoo.simulator import Simulator, SimulatorConfig
 from pixoo.api import PixooBaseApi
@@ -85,24 +86,36 @@ class Pixoo(PixooBaseApi):
 
     def __init__(
         self,
-        pixoo_config=PixooConfig(),
+        pixoo_config=None,
         debug=False,
         simulated=False,
         simulation_config=SimulatorConfig(),
     ):
-        self.refresh_connection_automatically = (
-            pixoo_config.refresh_connection_automatically
-        )
-        super().__init__(pixoo_config.address)
         self.debug = debug
-        self.size = pixoo_config.size
         self.simulated = simulated
+
+        _pixoo_config = pixoo_config
+        if _pixoo_config == None and self.simulated:
+            _pixoo_config = PixooConfig(address="simulated", size=64)
+        elif _pixoo_config == None:
+            try:
+                _pixoo_config = PixooConfig()
+            except NoPixooDevicesFound:
+                if self.debug:
+                    print(f"No Pixoo device found")
+                return
+
+        self.refresh_connection_automatically = (
+            _pixoo_config.refresh_connection_automatically
+        )
+        super().__init__(_pixoo_config.address)
+        self.size = _pixoo_config.size
 
         # Total number of pixels
         self.pixel_count = self.size * self.size
 
         # Generate URL
-        self.__url = f"http://{pixoo_config.address}/post"
+        self.__url = f"http://{_pixoo_config.address}/post"
 
         # Prefill the buffer
         self.fill()
