@@ -1,6 +1,6 @@
 # Pixoo
 
-A library to easily communicate with the Divoom Pixoo 64 (and hopefully soon more screens that support Wi-Fi)
+A library to easily communicate with the Divoom Pixoo 64 (and hopefully soon more screens that support Wi-Fi) based on the work of [SomethingWithComputers](https://github.com/SomethingWithComputers/pixoo). All credit should go to them.
 
 A simple working example application using this "rendering" framework can be found
 here: https://github.com/SomethingWithComputers/pixoo-banano
