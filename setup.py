@@ -10,8 +10,8 @@ longdescription = (this_directory / "README.md").read_text()
 
 setup(
     name="pixoo",
-    version="0.8.2",
-    author="Ron Talman, kongo09",
+    version="0.8.3",
+    author="kongo09",
     description=(
         "A library to easily communicate with the Divoom Pixoo 64",
         "(and hopefully soon more screens that support Wi-Fi)",
