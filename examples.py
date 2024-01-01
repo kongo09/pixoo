@@ -1,13 +1,16 @@
 from pixoo import Channel, ImageResampleMode, Pixoo
+from pixoo.font import Font
 
 '''
 Create a connection to a Pixoo
 
-First argument is its IP address (required)
+First argument is its IP address (optional)
 The second argument is the display size (optional, default 64)
 The third argument is the 'debug mode' (optional, default False), which enables logging of important actions
 '''
 pixoo = Pixoo('192.168.50.214', 64, True)
+# or
+pixoo = Pixoo()
 
 # The following are all 'drawing' methods.
 # Afterwards, be sure to call `pixoo.push()` to send the internal buffer to the connected display
@@ -55,6 +58,11 @@ pixoo.draw_text('Hello there..', (0, 0), (0, 255, 0))
 pixoo.draw_text('GENERAL KENOBI', (0, 6), (255, 0, 0))
 # or
 pixoo.draw_text_at_location_rgb('Neat', 0, 6, 255, 255, 0)
+
+'''
+To use the alternative GICKO font, simply specify it:
+'''
+pixoo.draw_text('Hello there..', (0, 0), (0, 255, 0), Font.FONT_GICKO)
 
 '''
 Load and add an image to the buffer.

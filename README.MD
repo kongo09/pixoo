@@ -55,6 +55,12 @@ library. I use brew:
 brew install python-tk
 ```
 
+Or install directly from PyPi:
+
+```shell
+pip3 install pixoo
+```
+
 ## Getting started
 
 Create an interface with your device as such (of course use your own local IP-address):
@@ -104,6 +110,12 @@ abcdefghijklmnopqrstuvwxyz
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 !'()+,-<=>?[]^_:;./{|}~$@%
 ```
+
+### GICKO alternative font
+
+Special thanks goes to [gickowtf](https://github.com/gickowtf/pixoo) who added the GICKO alternative font and also
+contributed flexible spacing to display wider and narrower letters so that they do not necessarily have to be three
+pixels wide.
 
 ## Known bugs
 
