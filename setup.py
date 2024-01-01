@@ -4,9 +4,6 @@
 """
 from setuptools import setup
 
-with open("README.md", "r", encoding="utf-8") as fh:
-    long_description = fh.read()
-
 setup(
     name="pixoo",
     version="0.8.0",
@@ -15,7 +12,6 @@ setup(
         "A library to easily communicate with the Divoom Pixoo 64",
         "(and hopefully soon more screens that support Wi-Fi)",
     ),
-    long_description=long_description,
     license="BSD",
     keywords="pixoo",
     url="https://github.com/kongo09/pixoo#readme",
