@@ -1,4 +1,4 @@
-# Pixoo
+# Pixoo_NG
 
 A library to easily communicate with the Divoom Pixoo 64 (and hopefully soon more screens that support Wi-Fi) based on the work of [SomethingWithComputers](https://github.com/SomethingWithComputers/pixoo). All credit should go to them.
 
@@ -7,10 +7,10 @@ here: https://github.com/SomethingWithComputers/pixoo-banano
 
 Tested on a Pixoo 64, with Python 3.10 on MacOS Monterey and on Windows 11.
 
-## The all new ✨Simulator✨
+## The all new Simulator
 
-.. Simulator might be a bit of a big word, but if you want to test your own drawing stuff,
-I've included a simple "simulator" that can render the buffer to a GUI so it's easier to debug without having to connect
+Simulator might be a bit of a big word, but if you want to test your own drawing stuff,
+there is a simple "simulator" included that can render the buffer to a GUI so it's easier to debug without having to connect
 to the device.
 
 It's in a very early stage, but it supports all methods that start with `draw_` and can be "pushed" to the GUI, just
@@ -33,13 +33,13 @@ set to 4 it'll look like this on MacOS:
 
 ## Installation
 
-You can install the pixoo package as developer locally with next command running from cloned folder:
+You can install the pixoo_ng package as developer locally with next command running from cloned folder:
 
 ```shell
 python -m pip install -e .
 ```
 
-Or Simply install the required dependencies via PIP. Navigate to the directory where you installed this library. Then
+Or simply install the required dependencies via PIP. Navigate to the directory where you installed this library. Then
 execute:
 
 ```shell
@@ -49,7 +49,7 @@ pip3 install -r requirements.txt
 Install the requirements.txt via pip install
 
 On some newer versions of MacOS, if you want to use the simulator you might have to manually install the `tkinter`
-library. I use brew:
+library. E.g., use brew:
 
 ```shell
 brew install python-tk
@@ -58,7 +58,7 @@ brew install python-tk
 Or install directly from PyPi:
 
 ```shell
-pip3 install pixoo
+pip3 install pixoo_ng
 ```
 
 ## Getting started
