@@ -95,14 +95,14 @@ class Pixoo(PixooBaseApi):
         self.simulated = simulated
 
         _pixoo_config = pixoo_config
-        if _pixoo_config == None and self.simulated:
+        if _pixoo_config is None and self.simulated:
             _pixoo_config = PixooConfig(address="simulated", size=64)
-        elif _pixoo_config == None:
+        elif _pixoo_config is None:
             try:
                 _pixoo_config = PixooConfig()
             except NoPixooDevicesFound:
                 if self.debug:
-                    print(f"No Pixoo device found")
+                    print("No Pixoo device found")
                 return
 
         self.refresh_connection_automatically = (
