@@ -9,7 +9,7 @@ this_directory = Path(__file__).parent
 longdescription = (this_directory / "README.md").read_text()
 
 setup(
-    name="pixoo-ng",
+    name="pixoo_ng",
     version="1.0.0",
     author="kongo09",
     description=(
@@ -18,13 +18,13 @@ setup(
     ),
     long_description=longdescription,
     long_description_content_type='text/markdown',
-    license="Apache2.0",
+    license="BSD",
     keywords="pixoo",
     url="https://github.com/kongo09/pixoo-ng#readme",
     project_urls={
         "Bug Tracker": "https://github.com/kongo09/pixoo-ng/issues",
     },
-    packages=['pixoo-ng'],
+    packages=['pixoo_ng'],
     install_requires=[
         'requests ~= 2.31.0',
         'Pillow ~= 10.0.0',

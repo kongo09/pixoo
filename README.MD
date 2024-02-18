@@ -5,7 +5,7 @@ A library to easily communicate with the Divoom Pixoo 64 (and hopefully soon mor
 A simple working example application using this "rendering" framework can be found
 here: https://github.com/SomethingWithComputers/pixoo-banano
 
-Tested on a Pixoo 64, with Python 3.10 on MacOS Monterey.
+Tested on a Pixoo 64, with Python 3.10 on MacOS Monterey and on Windows 11.
 
 ## The all new ✨Simulator✨
 

@@ -4,12 +4,12 @@ from enum import IntEnum
 
 from PIL import Image, ImageOps
 
-from pixoo.config import PixooConfig
-from pixoo._colors import Palette
-from pixoo.exceptions import NoPixooDevicesFound
-from pixoo.font import Font
-from pixoo.simulator import Simulator, SimulatorConfig
-from pixoo.api import PixooBaseApi
+from .config import PixooConfig
+from ._colors import Palette
+from .exceptions import NoPixooDevicesFound
+from .font import Font
+from .simulator import Simulator, SimulatorConfig
+from .api import PixooBaseApi
 
 
 def clamp(value, minimum=0, maximum=255):
