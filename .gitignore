@@ -3,3 +3,4 @@ pixoo/__pycache__/
 *.egg-info/
 dist/
 build/
+env/

@@ -4,12 +4,12 @@ from enum import IntEnum
 
 from PIL import Image, ImageOps
 
-from pixoo.config import PixooConfig
-from pixoo._colors import Palette
-from pixoo.exceptions import NoPixooDevicesFound
-from pixoo.font import Font
-from pixoo.simulator import Simulator, SimulatorConfig
-from pixoo.api import PixooBaseApi
+from .config import PixooConfig
+from ._colors import Palette
+from .exceptions import NoPixooDevicesFound
+from .font import Font
+from .simulator import Simulator, SimulatorConfig
+from .api import PixooBaseApi
 
 
 def clamp(value, minimum=0, maximum=255):
@@ -95,14 +95,14 @@ class Pixoo(PixooBaseApi):
         self.simulated = simulated
 
         _pixoo_config = pixoo_config
-        if _pixoo_config == None and self.simulated:
+        if _pixoo_config is None and self.simulated:
             _pixoo_config = PixooConfig(address="simulated", size=64)
-        elif _pixoo_config == None:
+        elif _pixoo_config is None:
             try:
                 _pixoo_config = PixooConfig()
             except NoPixooDevicesFound:
                 if self.debug:
-                    print(f"No Pixoo device found")
+                    print("No Pixoo device found")
                 return
 
         self.refresh_connection_automatically = (
