@@ -365,7 +365,7 @@ class Pixoo(PixooBaseApi):
         # Make sure the identifier is valid
         identifier = clamp(identifier, 0, 19)
         self.send_command(
-            command="Draw/SendText",
+            command="Draw/SendHttpText",
             text_id=identifier,
             x=xy[0],
             y=xy[1],
